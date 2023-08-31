@@ -1,23 +1,66 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { setupCounter } from '../lib/main'
+import fastify from "fastify";
+import rawBody from 'fastify-raw-body';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+import {
+  InteractionResponseType,
+  InteractionType,
+  verifyKey,
+} from "discord-interactions";
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const server = fastify({
+  logger: true,
+});
+
+server.register(rawBody, {
+  runFirst: true,
+});
+
+server.get("/", (request, response) => {
+  server.log.info("Handling GET request");
+});
+
+server.addHook("preHandler", async (request, response) => {
+  // We don't want to check GET requests to our root url
+
+  if (request.method === "POST") {
+    const signature = request.headers["x-signature-ed25519"];
+    const timestamp = request.headers["x-signature-timestamp"];
+
+    const isValidRequest = verifyKey(
+      request.rawBody,
+      signature as string,
+      timestamp as string,
+      process.env.PUBLIC_KEY
+    );
+
+    if (!isValidRequest) {
+      server.log.info("Invalid Request");
+
+      return response.status(401).send({ error: "Bad request signature " });
+    }
+  }
+});
+
+server.post("/", async (request, response) => {
+  const message = request.body;
+
+  if (message.type === InteractionType.PING) {
+    server.log.info("Handling Ping request");
+
+    response.send({
+      type: InteractionResponseType.PONG,
+    });
+  } else {
+    server.log.error("Unknown Type");
+
+    response.status(400).send({ error: "Unknown Type" });
+  }
+});
+
+server
+  .listen({
+    port: 3000,
+  })
+  .then((address) => {
+    server.log.info(`Server listening on ${address}`);
+  });
