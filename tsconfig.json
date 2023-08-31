@@ -1,3 +1,9 @@
 {
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    // "strict": true,
+    "skipLibCheck": true,
+    "outDir": "dist"
+  }
 }
