@@ -41,8 +41,9 @@ server.addHook("preHandler", async (request, response) => {
 
     const isValidRequest = verifyKey(
       request.rawBody,
-      signature as string,
-      timestamp as string,
+      // @ts-expect-error
+      signature,
+      timestamp,
       process.env.PUBLIC_KEY
     );
 
