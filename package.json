@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "discord-interactions": "^3.4.0",
+    "fastify": "^4.22.0",
     "fastify-raw-body": "^4.2.2"
   }
 }
