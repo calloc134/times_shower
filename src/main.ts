@@ -7,6 +7,24 @@ import {
   verifyKey,
 } from "discord-interactions";
 
+type Request = {
+  body: {
+    type: InteractionType;
+    data: {
+      name: string;
+      options: {
+        name: string;
+        value: string;
+      }[];
+    };
+  };
+};
+
+type Response = {
+  send: (data: any) => void;
+  status: (code: number) => Response;
+};
+
 const server = fastify({
   logger: true,
 });
@@ -41,7 +59,9 @@ server.addHook("preHandler", async (request, response) => {
   }
 });
 
-server.post("/", async (request, response) => {
+server.post<{
+  Body: Request["body"]
+}>("/", async (request, response) => {
   const message = request.body;
 
   if (message.type === InteractionType.PING) {
