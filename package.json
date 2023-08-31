@@ -9,7 +9,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "vite-node src/index.ts",
-    "build": "swc src -d dist/src && tsc-alias",
+    "build": "npm install && swc src -d dist/src && tsc-alias",
     "start": "NODE_ENV=production node ./dist/src/index.js"
   },
   "devDependencies": {
