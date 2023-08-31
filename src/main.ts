@@ -20,11 +20,6 @@ type Request = {
   };
 };
 
-type Response = {
-  send: (data: any) => void;
-  status: (code: number) => Response;
-};
-
 const server = fastify({
   logger: true,
 });

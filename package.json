@@ -4,20 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "files": [
-    "dist",
-    "index.d.ts"
+    "src/*.ts",
   ],
-  "main": "./dist/counter.umd.cjs",
-  "module": "./dist/counter.js",
-  "types": "./index.d.ts",
-  "exports": {
-    "types": "./index.d.ts",
-    "import": "./dist/counter.js",
-    "require": "./dist/counter.umd.cjs"
-  },
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build"
+    "dev": "vite-node src/index.ts",
+    "build": "tsc -p ."
   },
   "devDependencies": {
     "typescript": "^5.1.3"
