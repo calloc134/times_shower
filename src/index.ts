@@ -28,8 +28,9 @@ server.register(rawBody, {
   runFirst: true,
 });
 
-server.get("/", (request, response) => {
+server.get("/", (_, response) => {
   server.log.info("Handling GET request");
+  response.send({ hello: "world" });
 });
 
 server.addHook("preHandler", async (request, response) => {
