@@ -25,6 +25,7 @@ const server = fastify({
 });
 
 server.register(rawBody, {
+  global: true,
   runFirst: true,
 });
 
