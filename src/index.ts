@@ -36,7 +36,7 @@ type Request = {
 };
 
 // 環境変数CHANNEL_IDSの取得
-// JSON形式となっているため配列に変換する
+// 配列形式となっているため、それを配列オブジェクトに変換する
 const CHANNEL_IDS = JSON.parse(process.env.CHANNEL_IDS || "[]");
 
 // main関数の定義
@@ -133,6 +133,8 @@ async function main() {
           // Promise.allを使って並列処理を行う
           const results = await Promise.all(
             CHANNEL_IDS.map(async (channelId) => {
+              // チャンネルIDをログとして出力
+              server.log.info("Channel ID", channelId);
               // 投稿内容をDiscordに投稿する
               const result = await fetch(
                 `https://discord.com/api/v10/channels/${channelId}/messages`,
