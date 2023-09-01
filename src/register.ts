@@ -1,16 +1,57 @@
-import axios from "axios";
-import { POST_COMMAND } from "./command";
+const POST_COMMAND = {
+  name: "post",
+  description: "投稿する",
+  options: [
+    {
+      name: "content",
+      description: "投稿内容",
+      type: 3,
+      required: true,
+    },
+  ],
+};
+
+const ADD_CHANNEL_ID_COMMAND = {
+  name: "add_channel_id",
+  description: "チャンネルIDを追加する",
+  options: [
+    {
+      name: "channel_id",
+      description: "チャンネルID",
+      type: 3,
+      required: true,
+    },
+  ],
+};
+
+const REMOVE_CHANNEL_ID_COMMAND = {
+  name: "remove_channel_id",
+  description: "チャンネルIDを削除する",
+  options: [
+    {
+      name: "channel_id",
+      description: "チャンネルID",
+      type: 3,
+      required: true,
+    },
+  ],
+};
 
 const main = async () => {
 
-  const result = await fetch(`https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`, {
+  const APPLICATION_ID = ""
+  const BOT_TOKEN = ""
+
+  const result = await fetch(`https://discord.com/api/v8/applications/${APPLICATION_ID}/commands`, {
     method: "PUT",
     headers: {
-      "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+      "Authorization": `Bot ${BOT_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify([
-      POST_COMMAND
+      POST_COMMAND,
+      ADD_CHANNEL_ID_COMMAND,
+      REMOVE_CHANNEL_ID_COMMAND,
     ])
   });
 
