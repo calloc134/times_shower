@@ -118,7 +118,7 @@ async function main() {
 
           // 投稿内容をDiscordに投稿する
           const result = await fetch (
-            `https://discord.com/api/v8/channels/${process.env.CHANNEL_ID}/messages`,
+            `https://discord.com/api/v10/channels/${process.env.CHANNEL_ID}/messages`,
             {
               method: "POST",
               headers: {
