@@ -20,66 +20,72 @@ type Request = {
   };
 };
 
-const server = fastify({
-  logger: true,
-});
+async function main() {
 
-server.register(fastifyRawBody, {
-  runFirst: true,
-});
-
-server.get("/", (_, response) => {
-  server.log.info("Handling GET request");
-  response.send({ hello: "world" });
-});
-
-server.addHook("preHandler", async (request, response) => {
-  console.debug("x-signature-ed25519", request.headers["x-signature-ed25519"]);
-  console.debug("x-signature-timestamp", request.headers["x-signature-timestamp"]);
-  console.debug("rawBody", request.rawBody);
-
-  if (request.method === "POST") {
-    const signature = request.headers["x-signature-ed25519"];
-    const timestamp = request.headers["x-signature-timestamp"];
-
-    const isValidRequest = verifyKey(
-      request.rawBody,
-      // @ts-expect-error
-      signature,
-      timestamp,
-      process.env.PUBLIC_KEY
-    );
-
-    if (!isValidRequest) {
-      server.log.info("Invalid Request");
-
-      return response.status(401).send({ error: "Bad request signature " });
-    }
-  }
-});
-
-server.post<{
-  Body: Request["body"]
-}>("/", async (request, response) => {
-  const message = request.body;
-
-  if (message.type === InteractionType.PING) {
-    server.log.info("Handling Ping request");
-
-    response.send({
-      type: InteractionResponseType.PONG,
-    });
-  } else {
-    server.log.error("Unknown Type");
-
-    response.status(400).send({ error: "Unknown Type" });
-  }
-});
-
-server
-  .listen({
-    port: 3000,
-  })
-  .then((address) => {
-    server.log.info(`Server listening on ${address}`);
+  const server = fastify({
+    logger: true,
   });
+
+  await server.register(fastifyRawBody, {
+    runFirst: true,
+  });
+
+  server.get("/", (_, response) => {
+    server.log.info("Handling GET request");
+    response.send({ hello: "world" });
+  });
+
+  server.addHook("preHandler", async (request, response) => {
+    console.debug("x-signature-ed25519", request.headers["x-signature-ed25519"]);
+    console.debug("x-signature-timestamp", request.headers["x-signature-timestamp"]);
+    console.debug("rawBody", request.rawBody);
+
+    if (request.method === "POST") {
+      const signature = request.headers["x-signature-ed25519"];
+      const timestamp = request.headers["x-signature-timestamp"];
+
+      const isValidRequest = verifyKey(
+        request.rawBody,
+        // @ts-expect-error
+        signature,
+        timestamp,
+        process.env.PUBLIC_KEY
+      );
+
+      if (!isValidRequest) {
+        server.log.info("Invalid Request");
+
+        return response.status(401).send({ error: "Bad request signature " });
+      }
+    }
+  });
+
+  server.post<{
+    Body: Request["body"]
+  }>("/", async (request, response) => {
+    const message = request.body;
+
+    if (message.type === InteractionType.PING) {
+      server.log.info("Handling Ping request");
+
+      response.send({
+        type: InteractionResponseType.PONG,
+      });
+    } else {
+      server.log.error("Unknown Type");
+
+      response.status(400).send({ error: "Unknown Type" });
+    }
+  });
+
+  server
+    .listen({
+      port: 3000,
+    })
+    .then((address) => {
+      server.log.info(`Server listening on ${address}`);
+    });
+
+}
+
+main();
