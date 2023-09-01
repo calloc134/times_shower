@@ -36,8 +36,8 @@ type Request = {
 };
 
 // 環境変数CHANNEL_IDSの取得
-// 配列形式となっているため、それを配列オブジェクトに変換する
-const CHANNEL_IDS = JSON.parse(process.env.CHANNEL_IDS || "[]");
+// カンマ区切りのチャンネルIDを配列に変換する
+const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
 
 // main関数の定義
 // 非同期関数として定義する
