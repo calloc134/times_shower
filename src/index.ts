@@ -116,12 +116,15 @@ async function main() {
         // もし、コマンドの種類がPOSTだった場合は投稿の処理を行う
         case POST_COMMAND.name: {
           // オプションを確認
-          console.debug("options", message.data.options);
+          console.debug("data", message.data);
 
           // 投稿内容を取得
           const content = message.data.options.find(
             (option) => option.name === POST_COMMAND.options[0].name
           )?.value;
+
+          // もし投稿元チャンネルが指定されたものでない場合は400エラーを返す
+          
 
           // 投稿内容がない場合は400エラーを返す
           if (!content) {
