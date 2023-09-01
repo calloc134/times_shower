@@ -129,15 +129,10 @@ async function main() {
             return response.status(400).send({ error: "Content is empty" });
           }
 
-          // 投稿内容をログとして出力
-          server.log.info("Content", content);
-
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
           const results = await Promise.all(
             CHANNEL_IDS.map(async (channelId) => {
-              // チャンネルIDをログとして出力
-              server.log.info("Channel ID", channelId);
               // 投稿内容をDiscordに投稿する
               const result = await fetch(
                 `https://discord.com/api/v10/channels/${channelId}/messages`,
