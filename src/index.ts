@@ -1,5 +1,5 @@
 import fastify from "fastify";
-import rawBody from 'fastify-raw-body';
+import { fastifyRawBody } from 'fastify-raw-body';
 
 import {
   InteractionResponseType,
@@ -24,8 +24,7 @@ const server = fastify({
   logger: true,
 });
 
-server.register(rawBody, {
-  global: true,
+server.register(fastifyRawBody, {
   runFirst: true,
 });
 
