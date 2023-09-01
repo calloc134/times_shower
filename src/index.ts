@@ -154,8 +154,10 @@ async function main() {
           // 投稿に成功した場合は200を返す
           server.log.info("Success to post message");
           return response.status(200).send({
-            success: "Success to post message",
-            channel: process.env.CHANNEL_ID,
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `投稿しました: ${content}`
+            },
           });
         }
         default: {
