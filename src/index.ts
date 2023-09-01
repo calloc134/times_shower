@@ -58,9 +58,9 @@ async function main() {
 
   // リクエストの前処理として署名の検証を行う
   server.addHook("preHandler", async (request, response) => {
-    console.debug("x-signature-ed25519", request.headers["x-signature-ed25519"]);
-    console.debug("x-signature-timestamp", request.headers["x-signature-timestamp"]);
-    console.debug("rawBody", request.rawBody);
+    server.log.info("x-signature-ed25519", request.headers["x-signature-ed25519"]);
+    server.log.info("x-signature-timestamp", request.headers["x-signature-timestamp"]);
+    server.log.info("rawBody", request.rawBody);
 
     if (request.method === "POST") {
       const signature = request.headers["x-signature-ed25519"];
@@ -117,17 +117,22 @@ async function main() {
           }
 
           // 投稿内容をDiscordに投稿する
-          await axios.post(
+          const result = await fetch (
             `https://discord.com/api/v8/channels/${process.env.CHANNEL_ID}/messages`,
             {
-              content,
-            },
-            {
+              method: "POST",
               headers: {
                 "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+                "Content-Type": "application/json",
               },
+              body: JSON.stringify({
+                content,
+              }),
             }
           );
+
+          server.log.info(result.status);
+          server.log.info(await result.json());
           
           // 投稿に成功した場合は200を返す
           server.log.info("Success to post message");
@@ -152,7 +157,6 @@ async function main() {
     .then((address) => {
       server.log.info(`Server listening on ${address}`);
     });
-
 }
 
 main();
