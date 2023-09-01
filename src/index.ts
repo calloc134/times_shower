@@ -116,7 +116,7 @@ async function main() {
         // もし、コマンドの種類がPOSTだった場合は投稿の処理を行う
         case POST_COMMAND.name: {
           // オプションを確認
-          console.debug("data", message.data);
+          console.debug("message", message);
 
           // 投稿内容を取得
           const content = message.data.options.find(
