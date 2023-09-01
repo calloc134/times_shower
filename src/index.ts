@@ -134,6 +134,12 @@ async function main() {
           server.log.info(result.status);
           server.log.info(await result.json());
           
+          // 投稿に失敗した場合は500エラーを返す
+          if (result.status !== 200) {
+            server.log.error("Failed to post message");
+            return response.status(500).send({ error: "Failed to post message" });
+          }
+          
           // 投稿に成功した場合は200を返す
           server.log.info("Success to post message");
           return response.status(200).send({
