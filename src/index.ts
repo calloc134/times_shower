@@ -115,6 +115,9 @@ async function main() {
       switch (message.data.name) {
         // もし、コマンドの種類がPOSTだった場合は投稿の処理を行う
         case POST_COMMAND.name: {
+          // オプションを確認
+          server.log.info("options", message.data.options);
+
           // 投稿内容を取得
           const content = message.data.options.find(
             (option) => option.name === POST_COMMAND.options[0].name
