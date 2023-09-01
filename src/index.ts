@@ -1,6 +1,5 @@
 import fastify from "fastify";
-import { fastifyRawBody } from 'fastify-raw-body';
-import axios from "axios";
+import { fastifyRawBody } from "fastify-raw-body";
 
 import {
   InteractionResponseType,
@@ -39,7 +38,6 @@ type Request = {
 // main関数の定義
 // 非同期関数として定義する
 async function main() {
-
   // fastifyのインスタンスを作成
   const server = fastify({
     logger: true,
@@ -58,10 +56,18 @@ async function main() {
 
   // リクエストの前処理として署名の検証を行う
   server.addHook("preHandler", async (request, response) => {
-    server.log.info("x-signature-ed25519", request.headers["x-signature-ed25519"]);
-    server.log.info("x-signature-timestamp", request.headers["x-signature-timestamp"]);
+    // ヘッダの内容をログとして出力
+    server.log.info(
+      "x-signature-ed25519",
+      request.headers["x-signature-ed25519"]
+    );
+    server.log.info(
+      "x-signature-timestamp",
+      request.headers["x-signature-timestamp"]
+    );
     server.log.info("rawBody", request.rawBody);
 
+    // 形式がPOSTの場合のみ署名の検証を行う
     if (request.method === "POST") {
       const signature = request.headers["x-signature-ed25519"];
       const timestamp = request.headers["x-signature-timestamp"];
@@ -75,10 +81,9 @@ async function main() {
         process.env.PUBLIC_KEY
       );
 
-      // 署名の検証に失敗した場合は401エラーを返す
+      // 署名の検証に失敗した場合はその時点で401エラーを返す
       if (!isValidRequest) {
         server.log.info("Invalid Request");
-
         return response.status(401).send({ error: "Bad request signature " });
       }
     }
@@ -86,23 +91,25 @@ async function main() {
 
   // POSTリクエストの処理
   server.post<{
-    Body: Request["body"]
+    Body: Request["body"];
   }>("/", async (request, response) => {
     // リクエストのメッセージを取得
     const message = request.body;
 
     // メッセージのタイプに応じて処理を分岐
-    // もし、メッセージのタイプがPONGだった場合はPONGを返す
     if (message.type === InteractionType.PING) {
+      // もし、メッセージのタイプがPONGだった場合はPONGを返す
       server.log.info("Handling Ping request");
-
       response.send({
         type: InteractionResponseType.PONG,
       });
     } else if (message.type === InteractionType.APPLICATION_COMMAND) {
+      // もし、メッセージのタイプがAPPLICATION_COMMANDだった場合はコマンドの処理を行う
       server.log.info("Handling Application Command request");
 
+      // コマンドの種類に応じて処理を分岐
       switch (message.data.name) {
+        // もし、コマンドの種類がPOSTだった場合は投稿の処理を行う
         case POST_COMMAND.name: {
           // 投稿内容を取得
           const content = message.data.options.find(
@@ -112,17 +119,19 @@ async function main() {
           // 投稿内容がない場合は400エラーを返す
           if (!content) {
             server.log.error("Content is empty");
-
             return response.status(400).send({ error: "Content is empty" });
           }
 
+          // 投稿内容をログとして出力
+          server.log.info("Content", content);
+
           // 投稿内容をDiscordに投稿する
-          const result = await fetch (
+          const result = await fetch(
             `https://discord.com/api/v10/channels/${process.env.CHANNEL_ID}/messages`,
             {
               method: "POST",
               headers: {
-                "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+                Authorization: `Bot ${process.env.BOT_TOKEN}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -133,13 +142,15 @@ async function main() {
 
           server.log.info(result.status);
           server.log.info(await result.json());
-          
+
           // 投稿に失敗した場合は500エラーを返す
           if (result.status !== 200) {
             server.log.error("Failed to post message");
-            return response.status(500).send({ error: "Failed to post message" });
+            return response
+              .status(500)
+              .send({ error: "Failed to post message" });
           }
-          
+
           // 投稿に成功した場合は200を返す
           server.log.info("Success to post message");
           return response.status(200).send({
@@ -151,7 +162,6 @@ async function main() {
           server.log.error("Unknown Command");
         }
       }
-
     } else {
       server.log.error("Unknown Type");
 
