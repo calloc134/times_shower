@@ -35,6 +35,10 @@ type Request = {
   };
 };
 
+// 環境変数CHANNEL_IDSの取得
+// JSON形式となっているため配列に変換する
+const CHANNEL_IDS = JSON.parse(process.env.CHANNEL_IDS || "[]");
+
 // main関数の定義
 // 非同期関数として定義する
 async function main() {
@@ -125,26 +129,33 @@ async function main() {
           // 投稿内容をログとして出力
           server.log.info("Content", content);
 
-          // 投稿内容をDiscordに投稿する
-          const result = await fetch(
-            `https://discord.com/api/v10/channels/${process.env.CHANNEL_ID}/messages`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bot ${process.env.BOT_TOKEN}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                content,
-              }),
-            }
+          // 複数チャンネルの投稿を行う
+          // Promise.allを使って並列処理を行う
+          const results = await Promise.all(
+            CHANNEL_IDS.map(async (channelId) => {
+              // 投稿内容をDiscordに投稿する
+              const result = await fetch(
+                `https://discord.com/api/v10/channels/${channelId}/messages`,
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bot ${process.env.BOT_TOKEN}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    content,
+                  }),
+                }
+              );
+              server.log.info(result.status);
+              server.log.info(await result.json());
+
+              return result;
+            })
           );
 
-          server.log.info(result.status);
-          server.log.info(await result.json());
-
           // 投稿に失敗した場合は500エラーを返す
-          if (result.status !== 200) {
+          if (results.some((result) => result.status !== 200)) {
             server.log.error("Failed to post message");
             return response
               .status(500)
