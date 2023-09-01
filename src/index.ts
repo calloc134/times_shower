@@ -8,9 +8,19 @@ import {
   verifyKey,
 } from "discord-interactions";
 
-import { POST_COMMAND } from "./command";
-
-
+// コマンドの定義
+const POST_COMMAND = {
+  name: "post",
+  description: "投稿する",
+  options: [
+    {
+      name: "content",
+      description: "投稿内容",
+      type: 3,
+      required: true,
+    },
+  ],
+};
 
 // リクエストの形式の定義
 type Request = {
