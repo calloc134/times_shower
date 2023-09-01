@@ -34,7 +34,9 @@ server.get("/", (_, response) => {
 });
 
 server.addHook("preHandler", async (request, response) => {
-  // We don't want to check GET requests to our root url
+  console.debug("x-signature-ed25519", request.headers["x-signature-ed25519"]);
+  console.debug("x-signature-timestamp", request.headers["x-signature-timestamp"]);
+  console.debug("rawBody", request.rawBody);
 
   if (request.method === "POST") {
     const signature = request.headers["x-signature-ed25519"];
