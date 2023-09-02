@@ -222,17 +222,6 @@ async function main() {
           // 送信ユーザを取得
           const user = message.member.user;
           
-          // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          if (user.id !== process.env.USER_ID) {
-            server.log.error("User is not allowed");
-            return response.status(400).send({
-              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-              data: {
-                content: `投稿者が不正です`
-              },
-            });
-          }
-
           // 投稿内容を取得
           const content = message.data.options.find(
             (option) => option.name === POST_COMMAND.options[0].name
