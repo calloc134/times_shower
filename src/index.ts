@@ -236,7 +236,11 @@ async function main() {
           }
 
           // 投稿先チャンネルの取得
-          // const channelIds = await channel_ids.get(user.id).
+          const channelIds = await channel_ids.filter({
+            user: user.id,
+          })
+
+          console.debug(channelIds)
 
 
           // 複数チャンネルの投稿を行う
