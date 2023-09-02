@@ -16,7 +16,7 @@ const POST_COMMAND = {
     {
       name: "content",
       description: "投稿内容",
-      type: 3,
+      type: InteractionType.MESSAGE_COMPONENT,
       required: true,
     },
   ],
@@ -36,13 +36,13 @@ const ADD_CHANNEL_ID_COMMAND = {
     {
       name: "user_id",
       description: "ユーザID",
-      type: 3,
+      type: InteractionType.MESSAGE_COMPONENT,
       required: true,
     },
     {
       name: "channel_id",
       description: "チャンネルID",
-      type: 3,
+      type: InteractionType.MESSAGE_COMPONENT,
       required: true,
     },
   ],
@@ -56,13 +56,13 @@ const REMOVE_CHANNEL_ID_COMMAND = {
     {
       name: "user_id",
       description: "ユーザID",
-      type: 3,
+      type: InteractionType.MESSAGE_COMPONENT,
       required: true,
     },
     {
       name: "channel_id",
       description: "チャンネルID",
-      type: 3,
+      type: InteractionType.MESSAGE_COMPONENT,
       required: true,
     },
   ],
