@@ -34,6 +34,12 @@ const ADD_CHANNEL_ID_COMMAND = {
   description: "チャンネルIDを追加する",
   options: [
     {
+      name: "user_id",
+      description: "ユーザID",
+      type: 3,
+      required: true,
+    },
+    {
       name: "channel_id",
       description: "チャンネルID",
       type: 3,
@@ -47,6 +53,12 @@ const REMOVE_CHANNEL_ID_COMMAND = {
   name: "remove_channel_id",
   description: "チャンネルIDを削除する",
   options: [
+    {
+      name: "user_id",
+      description: "ユーザID",
+      type: 3,
+      required: true,
+    },
     {
       name: "channel_id",
       description: "チャンネルID",
@@ -211,15 +223,15 @@ async function main() {
           const user = message.member.user;
           
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          // if (user.id !== process.env.USER_ID) {
-          //   server.log.error("User is not allowed");
-          //   return response.status(400).send({
-          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          //     data: {
-          //       content: `投稿者が不正です`
-          //     },
-          //   });
-          // }
+          if (user.id !== process.env.USER_ID) {
+            server.log.error("User is not allowed");
+            return response.status(400).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `投稿者が不正です`
+              },
+            });
+          }
 
           // 投稿内容を取得
           const content = message.data.options.find(
@@ -312,19 +324,24 @@ async function main() {
           const user = message.member.user;
 
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          // if (user.id !== process.env.USER_ID) {
-          //   server.log.error("User is not allowed");
-          //   return response.status(400).send({
-          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          //     data: {
-          //       content: `投稿者が不正です`
-          //     },
-          //   });
-          // }
+          if (user.id !== process.env.USER_ID) {
+            server.log.error("User is not allowed");
+            return response.status(400).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `投稿者が不正です`
+              },
+            });
+          }
           
+          // ユーザIDを取得
+          const userId = message.data.options.find(
+            (option) => option.name === ADD_CHANNEL_ID_COMMAND.options[0].name
+          )?.value;
+
           // チャンネルIDを取得
           const channelId = message.data.options.find(
-            (option) => option.name === ADD_CHANNEL_ID_COMMAND.options[0].name
+            (option) => option.name === ADD_CHANNEL_ID_COMMAND.options[1].name
           )?.value;
 
           // チャンネルIDがない場合は400エラーを返す
@@ -340,9 +357,9 @@ async function main() {
 
           try {
             // チャンネルIDを追加する
-            await channel_ids.set(`${user.id}-${channelId}`, {
+            await channel_ids.set(`${userId}-${channelId}`, {
               type: "channel_id",
-              user: user.id,
+              user: userId,
               channel_id: channelId,
             }, {
               $index: [
@@ -387,9 +404,14 @@ async function main() {
           //   });
           // }
 
+          // ユーザIDを取得
+          const userId = message.data.options.find(
+            (option) => option.name === REMOVE_CHANNEL_ID_COMMAND.options[0].name
+          )?.value;
+
           // チャンネルIDを取得
           const channelId = message.data.options.find(
-            (option) => option.name === REMOVE_CHANNEL_ID_COMMAND.options[0].name
+            (option) => option.name === REMOVE_CHANNEL_ID_COMMAND.options[1].name
           )?.value;
 
           // チャンネルIDがない場合は400エラーを返す
@@ -405,7 +427,7 @@ async function main() {
 
           try {
             // クエリを削除する
-            await channel_ids.delete(`${user.id}-${channelId}`, {}, {})
+            await channel_ids.delete(`${userId}-${channelId}`, {}, {});
 
           } catch (error) {
             console.debug(error)

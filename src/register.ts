@@ -1,3 +1,4 @@
+// コマンドの定義
 const POST_COMMAND = {
   name: "times",
   description: "投稿する",
@@ -11,15 +12,23 @@ const POST_COMMAND = {
   ],
 };
 
+// 登録されているチャンネルを表示するコマンドの定義
 const SHOW_CHANNEL_ID_COMMAND = {
   name: "show_channel_id",
   description: "チャンネルIDを表示する",
 };
 
+// チャンネルを追加するコマンドの定義
 const ADD_CHANNEL_ID_COMMAND = {
   name: "add_channel_id",
   description: "チャンネルIDを追加する",
   options: [
+    {
+      name: "user_id",
+      description: "ユーザID",
+      type: 3,
+      required: true,
+    },
     {
       name: "channel_id",
       description: "チャンネルID",
@@ -29,10 +38,17 @@ const ADD_CHANNEL_ID_COMMAND = {
   ],
 };
 
+// チャンネルを削除するコマンドの定義
 const REMOVE_CHANNEL_ID_COMMAND = {
   name: "remove_channel_id",
   description: "チャンネルIDを削除する",
   options: [
+    {
+      name: "user_id",
+      description: "ユーザID",
+      type: 3,
+      required: true,
+    },
     {
       name: "channel_id",
       description: "チャンネルID",
