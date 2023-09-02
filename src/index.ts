@@ -329,7 +329,7 @@ async function main() {
               channel_id: channelId,
             }, {
               $index: [
-                "user", "channel_id"
+                "user"
               ]
             });
 
