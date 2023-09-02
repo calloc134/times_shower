@@ -392,7 +392,7 @@ async function main() {
             const query = (await channel_ids.filter({
               user: user.id,
               channel_id: channelId,
-            })).results;
+            })).results[0]
 
             // もし、クエリがない場合は400エラーを返す
             if (query.length === 0) {
@@ -407,6 +407,7 @@ async function main() {
 
             console.debug(query)
             // クエリを削除する
+            await channel_ids.delete(query.key,{},{});
 
           } catch (error) {
             // もし、チャンネルIDの削除に失敗した場合は500エラーを返す
