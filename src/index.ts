@@ -236,9 +236,9 @@ async function main() {
           }
 
           // 投稿先チャンネルの取得
-          const channelIds = await channel_ids.filter({
+          const channelIds = (await channel_ids.filter({
             user: user.id,
-          })
+          })).results.map((result) => result.channel_id);
 
           console.debug(channelIds)
 
@@ -321,11 +321,9 @@ async function main() {
             });
           }
 
-          console.debug(channelId)
-
           try {
             // チャンネルIDを追加する
-            await channel_ids.set(user.id, {
+            const result = await channel_ids.set(user.id, {
               type: "channel_id",
               user: user.id,
               channel_id: channelId,
@@ -334,6 +332,8 @@ async function main() {
                 "user", "channel_id"
               ]
             });
+
+            console.debug(result)
           } catch (error) {
             console.debug(error)
             // もし、チャンネルIDの追加に失敗した場合は500エラーを返す
