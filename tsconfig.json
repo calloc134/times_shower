@@ -4,6 +4,7 @@
     "baseUrl": ".",
     // "strict": true,
     "skipLibCheck": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "esModuleInterop": true
   }
 }

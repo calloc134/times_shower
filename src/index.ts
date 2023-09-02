@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import { fastifyRawBody } from "fastify-raw-body";
+import CyclicDb from "@cyclic.sh/dynamodb"
 
 import {
   InteractionResponseType,
@@ -93,6 +94,12 @@ type Request = {
 // 環境変数CHANNEL_IDSの取得
 // カンマ区切りのチャンネルIDを配列に変換する
 const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
+
+// DBの初期化
+const db = CyclicDb("cyclic") as typeof CyclicDb;
+
+// テーブルの定義
+const channel_ids = db.collection("channel_ids");
 
 // main関数の定義
 // 非同期関数として定義する
