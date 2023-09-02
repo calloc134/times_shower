@@ -238,7 +238,7 @@ async function main() {
           // 投稿先チャンネルの取得
           const channelIds = (await channel_ids.filter({
             user: user.id,
-          })).results
+          })).results.map((result) => result.props.channel_id)
 
           console.debug(channelIds)
 
