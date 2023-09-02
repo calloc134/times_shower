@@ -236,9 +236,6 @@ async function main() {
             user: user.id,
           })).results.map((result) => result.props.channel_id)
 
-          console.debug(channelIds)
-
-
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
           const results = await Promise.all(
@@ -329,7 +326,6 @@ async function main() {
               ]
             });
 
-            console.debug(result)
           } catch (error) {
             console.debug(error)
             // もし、チャンネルIDの追加に失敗した場合は500エラーを返す
@@ -401,11 +397,11 @@ async function main() {
               });
             }
 
-            console.debug(query)
             // クエリを削除する
             await channel_ids.delete(query.key,{},{});
 
           } catch (error) {
+            console.debug(error)
             // もし、チャンネルIDの削除に失敗した場合は500エラーを返す
             server.log.error("Failed to remove channel ID");
             return response.status(500).send({
