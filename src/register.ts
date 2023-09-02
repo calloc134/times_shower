@@ -55,6 +55,7 @@ const main = async () => {
     },
     body: JSON.stringify([
       POST_COMMAND,
+      SHOW_CHANNEL_ID_COMMAND,
       ADD_CHANNEL_ID_COMMAND,
       REMOVE_CHANNEL_ID_COMMAND,
     ])
