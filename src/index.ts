@@ -245,7 +245,7 @@ async function main() {
 
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
-          const results = await Promise.all(
+          Promise.all(
             channelIds.map(async (channelId) => {
               // 投稿内容をDiscordに投稿する
               const result = await fetch(
@@ -266,20 +266,13 @@ async function main() {
 
               return result;
             })
-          );
+          ).then((results) => {
+            console.debug(results)
+          })
+          .catch((error) => {
+            console.debug(error)
+          });
 
-          // 投稿に失敗した場合は500エラーを返す
-          if (results.some((result) => result.status !== 200)) {
-            server.log.error("Failed to post message");
-            return response
-              .status(200)
-              .send({
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                  content: `投稿に失敗しました: ${content}`
-                },
-              });
-          }
 
           // 投稿に成功した場合は200を返す
           server.log.info("Success to post message");
