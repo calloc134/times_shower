@@ -1,5 +1,5 @@
 const POST_COMMAND = {
-  name: "post",
+  name: "times",
   description: "投稿する",
   options: [
     {
@@ -9,6 +9,11 @@ const POST_COMMAND = {
       required: true,
     },
   ],
+};
+
+const SHOW_CHANNEL_ID_COMMAND = {
+  name: "show_channel_id",
+  description: "チャンネルIDを表示する",
 };
 
 const ADD_CHANNEL_ID_COMMAND = {

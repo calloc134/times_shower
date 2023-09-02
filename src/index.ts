@@ -1,7 +1,6 @@
 import fastify from "fastify";
 import { fastifyRawBody } from "fastify-raw-body";
 import CyclicDb from "@cyclic.sh/dynamodb"
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   InteractionResponseType,
@@ -11,7 +10,7 @@ import {
 
 // コマンドの定義
 const POST_COMMAND = {
-  name: "post",
+  name: "times",
   description: "投稿する",
   options: [
     {
@@ -21,6 +20,12 @@ const POST_COMMAND = {
       required: true,
     },
   ],
+};
+
+// 登録されているチャンネルを表示するコマンドの定義
+const SHOW_CHANNEL_ID_COMMAND = {
+  name: "show_channel_id",
+  description: "チャンネルIDを表示する",
 };
 
 // チャンネルを追加するコマンドの定義
@@ -281,6 +286,24 @@ async function main() {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
               content: `投稿しました: ${content}`
+            },
+          });
+        }
+        case SHOW_CHANNEL_ID_COMMAND.name: {
+          // 送信ユーザを取得
+          const user = message.member.user;
+
+          // チャンネルリストを取得
+          const channelIds = (await channel_ids.filter({
+            user: user.id,
+          })).results.map((result) => result.props.channel_id)
+
+          // チャンネルリストを表示する
+          server.log.info("Success to show channel IDs");
+          return response.status(200).send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `チャンネルID一覧: [${channelIds.join(", ")}]`
             },
           });
         }
