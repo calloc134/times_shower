@@ -127,7 +127,7 @@ const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
 const db = CyclicDb("cyclic") as typeof CyclicDb;
 
 // テーブルの定義
-const channel_ids = db.collection("attractive-pig-twillCyclicDB");
+const channel_ids = db.collection(process.env.TABLE_NAME);
 
 // main関数の定義
 // 非同期関数として定義する
@@ -317,6 +317,8 @@ async function main() {
             });
           }
 
+          console.debug(channelId)
+
           try {
             // チャンネルIDを追加する
             await channel_ids.set(user.id, {
@@ -329,6 +331,7 @@ async function main() {
               ]
             });
           } catch (error) {
+            console.debug(error)
             // もし、チャンネルIDの追加に失敗した場合は500エラーを返す
             server.log.error("Failed to add channel ID");
             return response.status(500).send({
