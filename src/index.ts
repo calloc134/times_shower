@@ -317,7 +317,7 @@ async function main() {
 
           try {
             // チャンネルIDを追加する
-            await channel_ids.set(uuidv4(), {
+            await channel_ids.set(`${user.id}-${channelId}`, {
               type: "channel_id",
               user: user.id,
               channel_id: channelId,
@@ -381,25 +381,8 @@ async function main() {
           }
 
           try {
-            // ユーザとチャンネルIDの組み合わせに該当するクエリを取得する
-            const query = (await channel_ids.filter({
-              user: user.id,
-              channel_id: channelId,
-            })).results[0]
-
-            // もし、クエリがない場合は400エラーを返す
-            if (query.length === 0) {
-              server.log.error("Query is empty");
-              return response.status(200).send({
-                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                  content: `該当するクエリがありません`
-                },
-              });
-            }
-
             // クエリを削除する
-            await channel_ids.delete(query.key,{},{});
+            await channel_ids.delete(`${user.id}-${channelId}`, {}, {})
 
           } catch (error) {
             console.debug(error)
