@@ -326,7 +326,7 @@ async function main() {
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
           if (user.id !== process.env.USER_ID) {
             server.log.error("User is not allowed");
-            return response.status(400).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `投稿者が不正です`
