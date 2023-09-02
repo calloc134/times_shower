@@ -124,10 +124,10 @@ type Request = {
 const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
 
 // DBの初期化
-const db = CyclicDb("cyclic") as typeof CyclicDb;
+const db = CyclicDb(process.env.TABLE_NAME) as typeof CyclicDb;
 
 // テーブルの定義
-const channel_ids = db.collection(process.env.TABLE_NAME);
+const channel_ids = db.collection("channel_ids");
 
 // main関数の定義
 // 非同期関数として定義する
