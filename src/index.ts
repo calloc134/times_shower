@@ -119,10 +119,6 @@ type Request = {
   body: ObjectType;
 };
 
-// 環境変数CHANNEL_IDSの取得
-// カンマ区切りのチャンネルIDを配列に変換する
-const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
-
 // DBの初期化
 const db = CyclicDb(process.env.TABLE_NAME) as typeof CyclicDb;
 
@@ -246,7 +242,7 @@ async function main() {
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
           const results = await Promise.all(
-            CHANNEL_IDS.map(async (channelId) => {
+            channelIds.map(async (channelId) => {
               // 投稿内容をDiscordに投稿する
               const result = await fetch(
                 `https://discord.com/api/v10/channels/${channelId}/messages`,
