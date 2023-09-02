@@ -127,7 +127,7 @@ const CHANNEL_IDS = process.env.CHANNEL_IDS?.split(",") ?? [];
 const db = CyclicDb("cyclic") as typeof CyclicDb;
 
 // テーブルの定義
-const channel_ids = db.collection("channel_ids");
+const channel_ids = db.collection("attractive-pig-twillCyclicDB");
 
 // main関数の定義
 // 非同期関数として定義する
@@ -237,7 +237,7 @@ async function main() {
 
           // 投稿先チャンネルの取得
           // const channelIds = await channel_ids.get(user.id).
-          
+
 
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
