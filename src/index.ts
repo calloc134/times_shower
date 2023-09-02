@@ -22,6 +22,34 @@ const POST_COMMAND = {
   ],
 };
 
+// チャンネルを追加するコマンドの定義
+const ADD_CHANNEL_ID_COMMAND = {
+  name: "add_channel_id",
+  description: "チャンネルIDを追加する",
+  options: [
+    {
+      name: "channel_id",
+      description: "チャンネルID",
+      type: 3,
+      required: true,
+    },
+  ],
+};
+
+// チャンネルを削除するコマンドの定義
+const REMOVE_CHANNEL_ID_COMMAND = {
+  name: "remove_channel_id",
+  description: "チャンネルIDを削除する",
+  options: [
+    {
+      name: "channel_id",
+      description: "チャンネルID",
+      type: 3,
+      required: true,
+    },
+  ],
+};
+
 type ObjectType = {
   app_permissions: string; // アプリの権限（文字列）
   application_id: string; // アプリケーションのID（文字列）
@@ -177,21 +205,24 @@ async function main() {
       switch (message.data.name) {
         // もし、コマンドの種類がPOSTだった場合は投稿の処理を行う
         case POST_COMMAND.name: {
+          // 送信ユーザを取得
+          const user = message.member.user;
+          
+          // もし投稿者が指定されたユーザでない場合は400エラーを返す
+          // if (user.id !== process.env.USER_ID) {
+          //   server.log.error("User is not allowed");
+          //   return response.status(400).send({
+          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          //     data: {
+          //       content: `投稿者が不正です`
+          //     },
+          //   });
+          // }
+
           // 投稿内容を取得
           const content = message.data.options.find(
             (option) => option.name === POST_COMMAND.options[0].name
           )?.value;
-
-          // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          if (message.member.user.id !== process.env.USER_ID) {
-            server.log.error("User is not allowed");
-            return response.status(400).send({
-              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-              data: {
-                content: `投稿者が不正です`
-              },
-            });
-          }
 
           // 投稿内容がない場合は400エラーを返す
           if (!content) {
@@ -203,6 +234,10 @@ async function main() {
               },
             });
           }
+
+          // 投稿先チャンネルの取得
+          // const channelIds = await channel_ids.get(user.id).
+          
 
           // 複数チャンネルの投稿を行う
           // Promise.allを使って並列処理を行う
@@ -248,6 +283,141 @@ async function main() {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
               content: `投稿しました: ${content}`
+            },
+          });
+        }
+        case ADD_CHANNEL_ID_COMMAND.name: {
+          // 送信ユーザを取得
+          const user = message.member.user;
+
+          // もし投稿者が指定されたユーザでない場合は400エラーを返す
+          // if (user.id !== process.env.USER_ID) {
+          //   server.log.error("User is not allowed");
+          //   return response.status(400).send({
+          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          //     data: {
+          //       content: `投稿者が不正です`
+          //     },
+          //   });
+          // }
+          
+          // チャンネルIDを取得
+          const channelId = message.data.options.find(
+            (option) => option.name === ADD_CHANNEL_ID_COMMAND.options[0].name
+          )?.value;
+
+          // チャンネルIDがない場合は400エラーを返す
+          if (!channelId) {
+            server.log.error("Channel ID is empty");
+            return response.status(400).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `チャンネルIDが空です`
+              },
+            });
+          }
+
+          try {
+            // チャンネルIDを追加する
+            await channel_ids.set(user.id, {
+              type: "channel_id",
+              user: user.id,
+              channel_id: channelId,
+            }, {
+              $index: [
+                "user", "channel_id"
+              ]
+            });
+          } catch (error) {
+            // もし、チャンネルIDの追加に失敗した場合は500エラーを返す
+            server.log.error("Failed to add channel ID");
+            return response.status(500).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `チャンネルIDの追加に失敗しました: ${channelId}`
+              },
+            });
+          }
+
+          // チャンネルIDを追加したことを返す
+          server.log.info("Success to add channel ID");
+          return response.status(200).send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `チャンネルIDを追加しました: ${channelId}`
+            },
+          });
+          
+        }
+        case REMOVE_CHANNEL_ID_COMMAND.name: {
+          // 送信ユーザを取得
+          const user = message.member.user;
+
+          // もし投稿者が指定されたユーザでない場合は400エラーを返す
+          // if (user.id !== process.env.USER_ID) {
+          //   server.log.error("User is not allowed");
+          //   return response.status(400).send({
+          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          //     data: {
+          //       content: `投稿者が不正です`
+          //     },
+          //   });
+          // }
+
+          // チャンネルIDを取得
+          const channelId = message.data.options.find(
+            (option) => option.name === REMOVE_CHANNEL_ID_COMMAND.options[0].name
+          )?.value;
+
+          // チャンネルIDがない場合は400エラーを返す
+          if (!channelId) {
+            server.log.error("Channel ID is empty");
+            return response.status(400).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `チャンネルIDが空です`
+              },
+            });
+          }
+
+          try {
+            // ユーザとチャンネルIDの組み合わせに該当するクエリを取得する
+            const query = (await channel_ids.filter({
+              user: user.id,
+              channel_id: channelId,
+            })).results;
+
+            // もし、クエリがない場合は400エラーを返す
+            if (query.length === 0) {
+              server.log.error("Query is empty");
+              return response.status(400).send({
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                  content: `該当するクエリがありません`
+                },
+              });
+            }
+
+            console.debug(query)
+            // クエリを削除する
+
+          } catch (error) {
+            // もし、チャンネルIDの削除に失敗した場合は500エラーを返す
+            server.log.error("Failed to remove channel ID");
+            return response.status(500).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `チャンネルIDの削除に失敗しました: ${channelId}`
+              },
+            });
+          }
+
+          // チャンネルIDを削除したことを返す
+          server.log.info("Success to remove channel ID");
+          return response.status(200).send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `チャンネルIDを削除しました: ${channelId}`
             },
           });
         }
