@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import { fastifyRawBody } from "fastify-raw-body";
 import CyclicDb from "@cyclic.sh/dynamodb"
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   InteractionResponseType,
@@ -316,7 +317,7 @@ async function main() {
 
           try {
             // チャンネルIDを追加する
-            await channel_ids.set(user.id, {
+            await channel_ids.set(uuidv4(), {
               type: "channel_id",
               user: user.id,
               channel_id: channelId,

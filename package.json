@@ -25,6 +25,7 @@
     "discord-interactions": "^3.4.0",
     "discord.js": "^14.13.0",
     "fastify": "^4.22.0",
-    "fastify-raw-body": "^4.2.2"
+    "fastify-raw-body": "^4.2.2",
+    "uuid": "^9.0.0"
   }
 }
