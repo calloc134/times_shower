@@ -223,7 +223,7 @@ async function main() {
           // 投稿内容がない場合は400エラーを返す
           if (!content) {
             server.log.error("Content is empty");
-            return response.status(400).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `投稿内容が空です`
@@ -265,7 +265,7 @@ async function main() {
           if (results.some((result) => result.status !== 200)) {
             server.log.error("Failed to post message");
             return response
-              .status(500)
+              .status(200)
               .send({
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
@@ -306,7 +306,7 @@ async function main() {
           // チャンネルIDがない場合は400エラーを返す
           if (!channelId) {
             server.log.error("Channel ID is empty");
-            return response.status(400).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `チャンネルIDが空です`
@@ -316,7 +316,7 @@ async function main() {
 
           try {
             // チャンネルIDを追加する
-            const result = await channel_ids.set(user.id, {
+            await channel_ids.set(user.id, {
               type: "channel_id",
               user: user.id,
               channel_id: channelId,
@@ -330,7 +330,7 @@ async function main() {
             console.debug(error)
             // もし、チャンネルIDの追加に失敗した場合は500エラーを返す
             server.log.error("Failed to add channel ID");
-            return response.status(500).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `チャンネルIDの追加に失敗しました: ${channelId}`
@@ -371,7 +371,7 @@ async function main() {
           // チャンネルIDがない場合は400エラーを返す
           if (!channelId) {
             server.log.error("Channel ID is empty");
-            return response.status(400).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `チャンネルIDが空です`
@@ -389,7 +389,7 @@ async function main() {
             // もし、クエリがない場合は400エラーを返す
             if (query.length === 0) {
               server.log.error("Query is empty");
-              return response.status(400).send({
+              return response.status(200).send({
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
                   content: `該当するクエリがありません`
@@ -404,7 +404,7 @@ async function main() {
             console.debug(error)
             // もし、チャンネルIDの削除に失敗した場合は500エラーを返す
             server.log.error("Failed to remove channel ID");
-            return response.status(500).send({
+            return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 content: `チャンネルIDの削除に失敗しました: ${channelId}`
@@ -423,7 +423,7 @@ async function main() {
         }
         default: {
           server.log.error("Unknown Command");
-          response.status(400).send({
+          response.status(200).send({
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
               content: `不明なコマンドです`
@@ -434,7 +434,7 @@ async function main() {
     } else {
       server.log.error("Unknown Type");
 
-      response.status(400).send({
+      response.status(200).send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `不明なタイプです`
