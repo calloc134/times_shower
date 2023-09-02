@@ -313,7 +313,7 @@ async function main() {
           const user = message.member.user;
 
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          if (user.id !== process.env.USER_ID) {
+          if (user.id !== process.env.ADMIN_ID) {
             server.log.error("User is not allowed");
             return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -383,7 +383,7 @@ async function main() {
           const user = message.member.user;
 
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          if (user.id !== process.env.USER_ID) {
+          if (user.id !== process.env.ADMIN_ID) {
             server.log.error("User is not allowed");
             return response.status(200).send({
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
