@@ -394,15 +394,15 @@ async function main() {
           const user = message.member.user;
 
           // もし投稿者が指定されたユーザでない場合は400エラーを返す
-          // if (user.id !== process.env.USER_ID) {
-          //   server.log.error("User is not allowed");
-          //   return response.status(400).send({
-          //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          //     data: {
-          //       content: `投稿者が不正です`
-          //     },
-          //   });
-          // }
+          if (user.id !== process.env.USER_ID) {
+            server.log.error("User is not allowed");
+            return response.status(200).send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                content: `投稿者が不正です`
+              },
+            });
+          }
 
           // ユーザIDを取得
           const userId = message.data.options.find(
