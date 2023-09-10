@@ -137,6 +137,26 @@ type Request = {
   body: ObjectType;
 };
 
+// リトライ用の関数
+async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const result = await fetch(url, options);
+      if (result.ok) return result; // 成功した場合はそのまま返す
+
+      // エラーログを出力
+      console.error(`Failed to fetch ${url}, Status: ${result.status}`);
+    } catch (error) {
+      console.error(`An error occurred: ${error}`);
+    }
+
+    // リトライする前に遅延
+    if (i < retries - 1) await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  throw new Error(`Failed to fetch ${url} after ${retries} retries`);
+}
+
 // DBの初期化
 const db = CyclicDb(process.env.TABLE_NAME) as typeof CyclicDb;
 
@@ -248,7 +268,7 @@ async function main() {
           Promise.all(
             channelIds.map(async (channelId) => {
               // 投稿内容をDiscordに投稿する
-              const result = await fetch(
+              const result = await fetchWithRetry(
                 `https://discord.com/api/v10/channels/${channelId}/messages`,
                 {
                   method: "POST",
